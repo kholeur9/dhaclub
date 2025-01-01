@@ -13,4 +13,5 @@ export class LoginDto {
     @Field()
     @IsNotEmpty({ message : "Le mot de passe est obligatoire."})
     password: string;
+    
 }
