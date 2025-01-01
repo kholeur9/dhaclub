@@ -6,6 +6,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthModule } from 'apps/auth/src/auth.module';
 import { UsersModule } from 'apps/users/src/users.module';
 import { GraphQLModule } from '@nestjs/graphql';
+import { ApolloGatewayDriver, ApolloGatewayDriverConfig } from '@nestjs/apollo';
+import { IntrospectAndCompose } from '@apollo/gateway';
 
 @Module({
   imports: [
@@ -13,6 +15,14 @@ import { GraphQLModule } from '@nestjs/graphql';
     ConfigModule.forRoot({ isGlobal: true }),
     AuthModule,
     UsersModule,
+    GraphQLModule.forRoot<ApolloGatewayDriverConfig>({
+      driver: ApolloGatewayDriver,
+      gateway: {
+        supergraphSdl: new IntrospectAndCompose({
+          subgraphs: [],
+        })
+      }
+    })
   ],
   controllers: [AppController],
   providers: [AppService],
