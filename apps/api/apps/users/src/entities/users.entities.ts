@@ -5,7 +5,7 @@ import { ObjectType, Field, Directive } from "@nestjs/graphql"
 @Directive('key(field: "id")')
 export class User {
     @Field({ nullable: true })
-    id?: number;
+    id?: string;
 
     @Field()
     first_name?: string;

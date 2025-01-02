@@ -9,6 +9,11 @@ import { DrizzleAsyncProvider } from '../../drizzle/drizzle.provider';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import * as schema from "@api/drizzle/schema/schema"
 
+// Importer les types générés automatiquement par drizzle
+import { InferSelectModel } from 'drizzle-orm';
+
+type User = InferSelectModel<typeof users>
+
 @Injectable()
 export class UsersService {
   constructor(
@@ -18,14 +23,17 @@ export class UsersService {
   ){}
 
   // Login User
-  async Login(loginDto: LoginDto){
+  async Login(loginDto: LoginDto) : Promise<{ error: boolean; data?: any; message?: string}> {
     try {
-      const user = this.verifyUser(loginDto)
+      const user = await this.verifyUser(loginDto)
       if (!user) {
         throw new Error("E-mail ou mot de passe invalide.")
       }
       return {
-        id: (await user).id,
+        error: false,
+        data: { 
+          id: user.id
+        }
       }
     } catch (error) {
       return {
@@ -36,13 +44,14 @@ export class UsersService {
   }
 
   // verify User
-  async verifyUser(dto: LoginDto){
+  async verifyUser(dto: LoginDto) : Promise<Partial<User> | null> {
     const user = await this.db.query.users.findFirst({
       where: eq(users.email, dto.email)
     });
     if (user && (await bcrypt.compare(dto.password, user.password))){
-      const { password, ...result} = user;
+      const { password, ...result } = user;
       return result;
     }
+    return null;
   }
 }
