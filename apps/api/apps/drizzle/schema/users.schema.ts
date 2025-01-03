@@ -1,7 +1,15 @@
-import { pgTable, serial, text, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
+import { 
+  pgTable, 
+  serial, 
+  text, 
+  timestamp, 
+  uniqueIndex 
+} from "drizzle-orm/pg-core";
+
+import { InferSelectModel } from "drizzle-orm";
 
 
-export const users = pgTable("users", {
+export const userTable = pgTable("users", {
   id: serial('id').primaryKey(),
   first_name: text('first_name').notNull(),
   last_name: text('last_name').notNull(),

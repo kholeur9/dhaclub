@@ -5,6 +5,7 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { DrizzleProvider } from '../../drizzle/drizzle.provider';
+import { UsersResolver } from './users.resolver';
 
 @Module({
   imports: [
@@ -12,10 +13,11 @@ import { DrizzleProvider } from '../../drizzle/drizzle.provider';
       driver: ApolloFederationDriver,
       autoSchemaFile: {
         federation: 2,
-      }
+      },
+      playground: true,
     })
   ],
   controllers: [],
-  providers: [UsersService, ConfigService, JwtService, ...DrizzleProvider],
+  providers: [UsersService, ConfigService, JwtService, ...DrizzleProvider, UsersResolver],
 })
 export class UsersModule {}

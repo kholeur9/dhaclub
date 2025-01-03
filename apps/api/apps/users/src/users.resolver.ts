@@ -11,8 +11,15 @@ export class UsersResolver {
         private readonly usersService:UsersService
     ) {}
 
+    @Query(() => [User])
+    async findAllUsers(){
+        return [];
+    }
+
     @Mutation(() => LoginResponse)
-    async loginUser(@Args('LoginDto') loginDto: LoginDto): Promise<LoginResponse> {
-        return this.usersService.Login(loginDto)
+    async loginUser(
+        @Args('email') email: string, 
+        @Args('password') password: string): Promise<LoginResponse> {
+        return await this.usersService.Login({ email, password})
     }
 }
