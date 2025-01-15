@@ -1,30 +1,23 @@
-'use server';
+import { gql, DocumentNode } from '@apollo/client';
 
-import { LoginSchema } from "../schema/LoginSchema";
-
-export const LoginAction = async (state, formData: FormData) => {
-  
-  try {
-    const validatedFields = LoginSchema.safeParse({
-      email: formData.get('email') as string,
-      password: formData.get('password') as string,
-    });
-
-    if (!validatedFields.success) {
-      return {
-        errors: validatedFields.error.flatten().fieldErrors,
-        fieldValues: {
-          email: formData.get('email') as string,
-          password: formData.get('password') as string,
+export const LOGIN_ACTION_USER: DocumentNode = gql`
+  mutation Login($email: String!, $password: String!) {
+    loginUser(email: $email, password: $password) {
+      user {
+        id
+        email
+        role {
+          id
+          name
         }
+        createdAt
+        updatedAt
+      }
+      access_token
+      refresh_token
+      error {
+        message
       }
     }
-
-    const { email, password } = validatedFields.data;
-
-    console.log(email, password)
-
-  } catch (error) {
-    console.log(error)
   }
-}
+`;

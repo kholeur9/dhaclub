@@ -1,59 +1,75 @@
 'use client';
 
+import Link from 'next/link';
+
 import clsx from "clsx";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useEmailStore } from "@/config/store/store-email";
 
-import { Input } from "@/components/ui/Input"
-import { Button } from "@/components/ui/Button"
-
-import { useRef, useActionState } from "react";
-import { LoginAction } from "./actions/LoginAction";
+import { loginSchema } from "./schema/LoginSchema";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
+import { LOGIN_ACTION_USER } from "./actions/LoginAction";
+import { useMutation } from "@apollo/client";
 
 export const LoginForm = () => {
+  const [Login, { data, loading, error }] = useMutation(LOGIN_ACTION_USER);
 
-  const formRef = useRef<HTMLFormElement>(null);
-  
-  const [state, formAction, pending] = useActionState(LoginAction, {
-    errors: undefined,
-    fieldValues: {
-      email: "",
-      password: ""
+  const { register, handleSubmit, formState: { errors }, reset } = useForm<z.infer <typeof loginSchema>>({
+    resolver: zodResolver(loginSchema),
+  });
+
+  //const { email, setEmail } = useEmailStore();
+
+  const onSubmit = async (data: any) => {
+    console.log(data)
+    try {
+      await Login({
+        variables: data
+      })
+    } catch (error) {
+      console.log(error)
     }
-  })
-  
+  }
+
   return (
-    <div className="flex flex-col">
-      <div className="flex flex-col">
-        <form ref={formRef} action={formAction} className="flex flex-col w-full h-full space-y-4">
+    <div className="flex flex-col h-auto">
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col w-full h-full space-y-1.5">
+        <div className="flex flex-col w-full h-full space-y-4">
           <div className="flex flex-col space-y-0.5">
             <Input
-              label="e-mail"
+              label="Adresse e-mail"
               type="email"
-              name="email"
-              className={clsx("w-full px-2.5 h-[45px] rounded-[5px] outline-none border border-gray-300 text-gray-800", { "border-red-500": state?.errors?.email })}
-              required
-              defaultValue={state?.fieldValues.email}
+              {...register("email", { required: true})}
+              className={clsx("w-full px-2.5 h-[45px] rounded-[3px] outline-none border border-[1.2px] border-gray-300 text-gray-800", {
+                "border-red-600": errors.email || error
+              })}
             />
-            {state?.errors?.email && <p className="text-xs text-red-500">{state.errors.email}</p>}
+            {error ? <p className="text-xs text-red-600">{error.message}</p> : errors.email ? <p className="text-xs text-red-600">{errors.email.message}</p> : null}
           </div>
+
           <div className="flex flex-col space-y-0.5">
             <Input
-              label="password"
+              label="Mot de passe"
               type="password"
-              name="password"
-              className={clsx("w-full px-2.5 h-[45px] rounded-[5px] outline-none border border-gray-300 text-gray-800", { "border-red-500": state?.errors?.password })}
-              required
-               defaultValue={state?.fieldValues.password}
+              {...register("password", { required: true})}
+              className={clsx("w-full px-2.5 h-[45px] rounded-[3px] outline-none border border-[1.2px] border-gray-300 text-gray-800", {"border-red-600": errors.password || error })}
             />
-             {state?.errors?.password && <p className="text-xs text-red-500">{state.errors.password}</p>}
+            {errors.password ? <p className="text-xs text-red-600 font-[500]">{errors.password.message}</p> : ( error ? <p className="text-xs text-red-600 font-[500]">{error.message}</p> : null)}
           </div>
-          <div>
-            <Button disabled={pending} size='lg' variant='default' className="w-full font-[700]">{pending ? "Vérification..." : "Connexion"}</Button>
-          </div>
-        </form>
-      </div>
-      <div>
+        </div>
+
+        <Link href={'#'} className="text-[12px] text-gray-600">Vous avez oubliez votre mot de passe ?</Link>
         
-      </div>
+        <div className="flex flex-col space-y-0.5">
+          <Button type="submit" className="w-full h-[45px] mt-4">
+            {loading ? <div className="loader"></div> : "Connexion"}
+          </Button>
+        </div>
+      </form>
     </div>
-  )
-}
+  );
+};

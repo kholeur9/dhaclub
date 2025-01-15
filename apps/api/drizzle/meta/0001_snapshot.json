@@ -1,6 +1,6 @@
 {
-  "id": "b0167691-4ff3-44b3-b032-ea0d4c7b1228",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "b0526b0f-b3f2-4057-94b0-b28363200ba8",
+  "prevId": "b0167691-4ff3-44b3-b032-ea0d4c7b1228",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -19,13 +19,21 @@
           "type": "profileTypes",
           "typeSchema": "public",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         }
       },
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "profileType_profile_type_unique": {
+          "name": "profileType_profile_type_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "profile_type"
+          ]
+        }
+      },
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
@@ -126,6 +134,13 @@
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
+        "profiles_user_id_unique": {
+          "name": "profiles_user_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "user_id"
+          ]
+        },
         "profiles_phone_number_unique": {
           "name": "profiles_phone_number_unique",
           "nullsNotDistinct": false,
@@ -153,13 +168,21 @@
           "type": "roles",
           "typeSchema": "public",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         }
       },
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "roles_users_role_unique": {
+          "name": "roles_users_role_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "role"
+          ]
+        }
+      },
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
